@@ -1,0 +1,75 @@
+version: "3.9"
+
+# AuraLSP docker-compose
+# ----------------------
+# Starts the AuraLSP metrics API and Ollama together.
+#
+# NOTE: The LSP server itself runs via stdio (stdin/stdout) — it is spawned
+# by your editor, not Docker. Docker is used for:
+#   1. The /metrics FastAPI API (observable telemetry dashboard)
+#   2. Ollama (local LLM inference engine)
+#
+# Usage:
+#   docker-compose up           # starts Ollama + metrics API
+#   docker-compose up -d        # detached (background)
+#   docker-compose logs -f      # stream logs
+#   docker-compose down         # stop and remove containers
+
+services:
+
+  # -------------------------------------------------------------------------
+  # Ollama: local LLM inference engine
+  # -------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: auralsp-ollama
+    ports:
+      - "11434:11434"       # Ollama API — LSP server connects here
+    volumes:
+      - ollama_models:/root/.ollama  # Persist downloaded models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Pull the model on first start
+    # Qwen2.5-Coder-1.5B Q4_K_M ≈ 1.1GB download
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull qwen2.5-coder:1.5b
+        wait
+
+  # -------------------------------------------------------------------------
+  # AuraLSP Metrics API
+  # -------------------------------------------------------------------------
+  metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auralsp-metrics
+    ports:
+      - "8765:8765"         # FastAPI metrics endpoint
+    volumes:
+      # Mount the telemetry DB from host so metrics persist across restarts
+      - ./auralsp_telemetry.db:/app/auralsp_telemetry.db
+      - ./config:/app/config:ro
+    environment:
+      - AURALSP_CONFIG=/app/config/default.json
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8765/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  ollama_models:
+    name: auralsp_ollama_models

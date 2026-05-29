@@ -1,0 +1,15 @@
+{
+  "auralsp.enable": true,
+
+  "[python]": {
+    "editor.inlineSuggest.enabled": true,
+    "editor.quickSuggestions": {
+      "other": "on",
+      "comments": "off",
+      "strings": "off"
+    }
+  },
+
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggest.snippetsPreventQuickSuggestions": false
+}

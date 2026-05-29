@@ -1,0 +1,41 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 2087,
+    "log_level": "INFO",
+    "log_file": "auralsp.log"
+  },
+  "ollama": {
+    "base_url": "http://localhost:11434",
+    "model": "qwen2.5-coder:0.5b",
+    "temperature": 0.0,
+    "top_p": 0.9,
+    "repeat_penalty": 1.05,
+    "stream": true,
+    "timeout_seconds": 30
+  },
+  "completion": {
+    "debounce_ms": 200,
+    "max_prefix_lines": 20,
+    "max_suffix_lines": 10,
+    "max_completion_tokens": 60,
+    "trigger_characters": [".", "(", " "]
+  },
+  "knapsack": {
+    "token_cap": 1800,
+    "weight_semantic": 0.5,
+    "weight_graph_distance": 0.3,
+    "weight_recency": 0.2,
+    "top_k_candidates": 20
+  },
+  "embedding": {
+    "model_name": "all-MiniLM-L6-v2",
+    "batch_size": 32,
+    "vector_dim": 384
+  },
+  "metrics": {
+    "enabled": true,
+    "db_path": "auralsp_telemetry.db",
+    "metrics_port": 8765
+  }
+}
