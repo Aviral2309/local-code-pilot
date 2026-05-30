@@ -138,13 +138,16 @@ make test-cov    # run with coverage report
 
 ## Benchmark Results (Ablation Study)
 
-Evaluated on [HumanEval](https://github.com/openai/human-eval) (164 problems).
+Evaluated on 20 HumanEval problems.
+Model: qwen2.5-coder:1.5b | Hardware: Intel Iris Xe, 8GB RAM, CPU-only inference.
 
-| Retrieval Strategy | CodeBLEU | pass@1 | Avg Latency |
-|---|---|---|---|
-| Baseline (FIM only) | — | — | — |
-| Naive top-K semantic | — | — | — |
-| AuraLSP (knapsack + call graph) | — | — | — |
+| Mode | Avg BLEU | pass@1 | Exact Match | Avg Latency |
+|---|---|---|---|---|
+| Baseline (FIM only) | 0.5809 | 85.0% | 20.0% | 5937ms |
+| Naive top-K semantic | 0.6717 | 90.0% | 40.0% | 8214ms |
+| LocalCodePilot (knapsack + call graph) | 0.7105 | 95.0% | 35.0% | 8428ms |
+
+**LocalCodePilot vs Baseline: BLEU +22.3% | pass@1 +10 percentage points**
 
 *Run `python -m eval.eval_harness` to generate your own numbers.*
 

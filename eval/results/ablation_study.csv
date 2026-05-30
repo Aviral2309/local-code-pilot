@@ -1,0 +1,380 @@
+task_id,mode,prefix,canonical,completion,bleu_score,syntax_valid,exact_match,latency_ms,tokens_in_context,error
+HumanEval/0,baseline,"def has_close_elements(numbers: list, threshold: float) -> bool:
+    """""" Check if in given list of n...","            if idx != idx2:
+                distance = abs(elem - elem2)
+                if distance...","            if idx != idx2 and abs(elem - elem2) < threshold:
+                return True
+    return...",0.6842,True,False,6695.5,0,
+HumanEval/1,baseline,"def separate_paren_groups(paren_string: str) -> list:
+    """""" Input to this function is a string con...","        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        eli...","        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        eli...",0.9286,True,False,7214.3,0,
+HumanEval/2,baseline,"def truncate_number(number: float) -> float:
+    """""" Given a positive floating point number, it can ...",...,...,1.0,True,True,2937.5,0,
+HumanEval/3,baseline,"from typing import List
+def below_zero(operations: List[int]) -> bool:
+    """""" You are given a list ...","        balance += op
+        if balance < 0:
+            return True
+    return False
+...","        balance += op
+        if balance < 0:
+            return True
+    return False
+
+def check(ca...",0.44,True,False,8125.0,0,
+HumanEval/4,baseline,"from typing import List
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """""" For a gi...","    return sum(abs(x - mean) for x in numbers) / len(numbers)
+...",    return sum(abs(x - mean) for x in numbers) / len(numbers)...,1.0,True,True,4422.0,0,
+HumanEval/5,baseline,"from typing import List
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """""" In...","    result = []
+    for n in numbers[:-1]:
+        result.append(n)
+        result.append(delimeter)...","    result = [numbers[0]]
+    for num in numbers[1:]:
+        result.extend([delimeter, num])
+    re...",0.5217,True,False,4826.4,0,
+HumanEval/6,baseline,"from typing import List
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """""" Input to th...","        for c in s:
+            if c == '(':
+                depth += 1
+                max_depth = ...","        for char in s:
+            if char == '(':
+                depth += 1
+                max_de...",0.4681,False,False,10626.6,0,
+HumanEval/7,baseline,"from typing import List
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+  ...",...,"if __name__ == ""__main__"":
+    import doctest
+    doctest.testmod()...",0.0,True,False,4506.8,0,
+HumanEval/8,baseline,"from typing import List, Tuple
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """""" For a...","    for n in numbers:
+        sum_value += n
+        prod_value *= n
+    return sum_value, prod_valu...","    for num in numbers:
+        sum_value += num
+        prod_value *= num
+    return sum_value, pro...",0.274,False,False,10424.5,0,
+HumanEval/9,baseline,"from typing import List, Tuple
+def rolling_max(numbers: List[int]) -> List[int]:
+    """""" From a give...","        if running_max is None:
+            running_max = n
+        else:
+            running_max = ...","        if running_max is None or n > running_max:
+            running_max = n
+        result.append...",0.2812,False,False,10485.7,0,
+HumanEval/10,baseline,"def make_palindrome(string: str) -> str:
+    """""" Find the shortest palindrome that begins with a sup...","    beginning_of_suffix = 0
+    while not string[beginning_of_suffix:] == string[beginning_of_suffix...","    for i in range(len(string)):
+        if string[:i] == string[:i][::-1]:
+            return strin...",0.2222,True,False,4374.2,0,
+HumanEval/11,baseline,"from typing import List
+def string_xor(a: str, b: str) -> str:
+    """""" Input are two strings a and b...","            return '0'
+        else:
+            return '1'
+    return ''.join(xor(x, y) for x, y in...","            return '0'
+        else:
+            return '1'
+    return ''.join(xor(a[i], b[i]) for i...",0.6154,True,False,4984.8,0,
+HumanEval/12,baseline,"from typing import List, Optional
+def longest(strings: List[str]) -> Optional[str]:
+    """""" Out of l...","    maxlen = max(len(x) for x in strings)
+    for s in strings:
+        if len(s) == maxlen:
+       ...","    max_length = max(len(s) for s in strings)
+    return next((s for s in strings if len(s) == max_l...",0.6857,True,False,5442.4,0,
+HumanEval/13,baseline,"def greatest_common_divisor(a: int, b: int) -> int:
+    """""" Return a greatest common divisor of two ...","        a, b = b, a % b
+    return a
+...","        a, b = b, a % b
+    return a
+
+if __name__ == ""__main__"":
+    import doctest
+    doctest.test...",0.72,True,False,4875.9,0,
+HumanEval/14,baseline,"from typing import List
+def all_prefixes(string: str) -> List[str]:
+    """""" Return list of all prefi...","    for i in range(len(string)):
+        result.append(string[:i+1])
+    return result
+...","    for i in range(1, len(string)+1):
+        result.append(string[:i])
+    return result...",0.6667,True,False,3706.9,0,
+HumanEval/15,baseline,"def string_sequence(n: int) -> str:
+    """""" Return a string containing space-delimited numbers start...",...,...,1.0,True,True,3048.5,0,
+HumanEval/16,baseline,"def count_distinct_characters(string: str) -> int:
+    """""" Given a string, find out how many distinc...",...,...,1.0,True,True,2799.9,0,
+HumanEval/17,baseline,"from typing import List
+def parse_music(music_string: str) -> List[int]:
+    """""" Input to this funct...","    return [note_map[x] for x in music_string.split(' ') if x]
+...",    return [note_map[note] for note in music_string.split()]...,0.4,True,False,6550.2,0,
+HumanEval/18,baseline,"def how_many_times(string: str, substring: str) -> int:
+    """""" Find how many times a given substrin...","    for i in range(len(string) - len(substring) + 1):
+        if string[i:i+len(substring)] == subst...","    while substring in string:
+        times += 1
+        string = string[substring.index('') + 1:]
+...",0.4516,True,False,4804.4,0,
+HumanEval/19,baseline,"from typing import List
+def sort_numbers(numbers: str) -> str:
+    """""" Input is a space-delimited st...","    return ' '.join(sorted([x for x in numbers.split(' ') if x], key=lambda x: value_map[x]))
+...","    numbers_list = [value_map[num] for num in numbers.split()]
+    numbers_list.sort()
+    sorted_nu...",0.2581,True,False,7893.0,0,
+HumanEval/0,naive,"def has_close_elements(numbers: list, threshold: float) -> bool:
+    """""" Check if in given list of n...","            if idx != idx2:
+                distance = abs(elem - elem2)
+                if distance...","            if idx != idx2 and abs(elem - elem2) < threshold:
+                return True
+    return...",0.3636,True,False,15441.0,83,
+HumanEval/1,naive,"def separate_paren_groups(paren_string: str) -> list:
+    """""" Input to this function is a string con...","        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        eli...","        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        eli...",0.7123,True,False,11263.1,67,
+HumanEval/2,naive,"def truncate_number(number: float) -> float:
+    """""" Given a positive floating point number, it can ...",...,...,1.0,True,True,5082.2,76,
+HumanEval/3,naive,"from typing import List
+def below_zero(operations: List[int]) -> bool:
+    """""" You are given a list ...","        balance += op
+        if balance < 0:
+            return True
+    return False
+...","        balance += op
+        if balance < 0:
+            return True
+    return False...",1.0,True,True,8309.5,87,
+HumanEval/4,naive,"from typing import List
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """""" For a gi...","    return sum(abs(x - mean) for x in numbers) / len(numbers)
+...",    return sum(abs(x - mean) for x in numbers) / len(numbers)...,1.0,True,True,7869.8,91,
+HumanEval/5,naive,"from typing import List
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """""" In...","    result = []
+    for n in numbers[:-1]:
+        result.append(n)
+        result.append(delimeter)...","    result = [numbers[0]]
+    for num in numbers[1:]:
+        result.extend([delimeter, num])
+    re...",0.5217,True,False,7238.7,74,
+HumanEval/6,naive,"from typing import List
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """""" Input to th...","        for c in s:
+            if c == '(':
+                depth += 1
+                max_depth = ...","        for char in s:
+            if char == '(':
+                depth += 1
+                max_de...",0.4583,False,False,13345.3,94,
+HumanEval/7,naive,"from typing import List
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+  ...",...,...,1.0,True,True,5929.3,87,
+HumanEval/8,naive,"from typing import List, Tuple
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """""" For a...","    for n in numbers:
+        sum_value += n
+        prod_value *= n
+    return sum_value, prod_valu...","    for num in numbers:
+        sum_value += num
+        prod_value *= num
+    return sum_value, pro...",0.7692,True,False,7352.7,78,
+HumanEval/9,naive,"from typing import List, Tuple
+def rolling_max(numbers: List[int]) -> List[int]:
+    """""" From a give...","        if running_max is None:
+            running_max = n
+        else:
+            running_max = ...","        if running_max is None or n > running_max:
+            running_max = n
+        result.append...",0.2118,False,False,13138.4,75,
+HumanEval/10,naive,"def make_palindrome(string: str) -> str:
+    """""" Find the shortest palindrome that begins with a sup...","    beginning_of_suffix = 0
+    while not string[beginning_of_suffix:] == string[beginning_of_suffix...","    for i in range(len(string)):
+        if string[:i+1] == string[:i+1][::-1]:
+            return s...",0.2581,True,False,6040.2,55,
+HumanEval/11,naive,"from typing import List
+def string_xor(a: str, b: str) -> str:
+    """""" Input are two strings a and b...","            return '0'
+        else:
+            return '1'
+    return ''.join(xor(x, y) for x, y in...","            return '0'
+        else:
+            return '1'
+
+    return ''.join(xor(a[i], b[i]) for ...",0.6154,True,False,7225.2,69,
+HumanEval/12,naive,"from typing import List, Optional
+def longest(strings: List[str]) -> Optional[str]:
+    """""" Out of l...","    maxlen = max(len(x) for x in strings)
+    for s in strings:
+        if len(s) == maxlen:
+       ...","    max_length = 0
+    longest_string = None
+    for string in strings:
+        if len(string) > max...",0.3077,True,False,8811.1,98,
+HumanEval/13,naive,"def greatest_common_divisor(a: int, b: int) -> int:
+    """""" Return a greatest common divisor of two ...","        a, b = b, a % b
+    return a
+...","        a, b = b, a % b
+    return a...",1.0,True,True,5392.7,58,
+HumanEval/14,naive,"from typing import List
+def all_prefixes(string: str) -> List[str]:
+    """""" Return list of all prefi...","    for i in range(len(string)):
+        result.append(string[:i+1])
+    return result
+...","    for i in range(len(string)):
+        result.append(string[:i+1])
+    return result...",1.0,True,True,4969.7,57,
+HumanEval/15,naive,"def string_sequence(n: int) -> str:
+    """""" Return a string containing space-delimited numbers start...",...,...,1.0,True,True,4763.9,59,
+HumanEval/16,naive,"def count_distinct_characters(string: str) -> int:
+    """""" Given a string, find out how many distinc...",...,...,1.0,True,True,4519.1,70,
+HumanEval/17,naive,"from typing import List
+def parse_music(music_string: str) -> List[int]:
+    """""" Input to this funct...","    return [note_map[x] for x in music_string.split(' ') if x]
+...",    return [note_map[note] for note in music_string.split()]...,0.4,True,False,11012.2,130,
+HumanEval/18,naive,"def how_many_times(string: str, substring: str) -> int:
+    """""" Find how many times a given substrin...","    for i in range(len(string) - len(substring) + 1):
+        if string[i:i+len(substring)] == subst...","    while substring in string:
+        times += 1
+        string = string[string.index(substring) + ...",0.4516,True,False,7085.6,78,
+HumanEval/19,naive,"from typing import List
+def sort_numbers(numbers: str) -> str:
+    """""" Input is a space-delimited st...","    return ' '.join(sorted([x for x in numbers.split(' ') if x], key=lambda x: value_map[x]))
+...","    sorted_numbers = sorted(numbers.split(), key=lambda x: value_map[x])
+    return ' '.join(sorted_...",0.3636,True,False,9496.4,100,
+HumanEval/0,localcodepilot,"def has_close_elements(numbers: list, threshold: float) -> bool:
+    """""" Check if in given list of n...","            if idx != idx2:
+                distance = abs(elem - elem2)
+                if distance...","            if idx != idx2 and abs(elem - elem2) < threshold:
+                return True
+    return...",0.7742,True,False,10255.8,120,
+HumanEval/1,localcodepilot,"def separate_paren_groups(paren_string: str) -> list:
+    """""" Input to this function is a string con...","        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        eli...","        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        eli...",0.6667,False,False,12203.1,104,
+HumanEval/2,localcodepilot,"def truncate_number(number: float) -> float:
+    """""" Given a positive floating point number, it can ...",...,...,1.0,True,True,6309.5,113,
+HumanEval/3,localcodepilot,"from typing import List
+def below_zero(operations: List[int]) -> bool:
+    """""" You are given a list ...","        balance += op
+        if balance < 0:
+            return True
+    return False
+...","        balance += op
+        if balance < 0:
+            return True
+    return False
+
+# [END SOLUT...",0.88,True,False,9134.2,124,
+HumanEval/4,localcodepilot,"from typing import List
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """""" For a gi...","    return sum(abs(x - mean) for x in numbers) / len(numbers)
+...",    return sum(abs(x - mean) for x in numbers) / len(numbers)...,1.0,True,True,7931.6,128,
+HumanEval/5,localcodepilot,"from typing import List
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """""" In...","    result = []
+    for n in numbers[:-1]:
+        result.append(n)
+        result.append(delimeter)...","    result = [numbers[0]]
+    for num in numbers[1:]:
+        result.extend([delimeter, num])
+    re...",0.5217,True,False,8096.0,111,
+HumanEval/6,localcodepilot,"from typing import List
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """""" Input to th...","        for c in s:
+            if c == '(':
+                depth += 1
+                max_depth = ...","        for char in s:
+            if char == '(':
+                depth += 1
+                max_de...",0.6984,True,False,10500.9,131,
+HumanEval/7,localcodepilot,"from typing import List
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+  ...",...,...,1.0,True,True,6823.7,124,
+HumanEval/8,localcodepilot,"from typing import List, Tuple
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """""" For a...","    for n in numbers:
+        sum_value += n
+        prod_value *= n
+    return sum_value, prod_valu...","    for num in numbers:
+        sum_value += num
+        prod_value *= num
+    return sum_value, pro...",0.7692,True,False,8222.8,115,
+HumanEval/9,localcodepilot,"from typing import List, Tuple
+def rolling_max(numbers: List[int]) -> List[int]:
+    """""" From a give...","        if running_max is None:
+            running_max = n
+        else:
+            running_max = ...","        if running_max is None or n > running_max:
+            running_max = n
+        result.append...",0.5625,True,False,8943.4,112,
+HumanEval/10,localcodepilot,"def make_palindrome(string: str) -> str:
+    """""" Find the shortest palindrome that begins with a sup...","    beginning_of_suffix = 0
+    while not string[beginning_of_suffix:] == string[beginning_of_suffix...","    for i in range(len(string)):
+        if string[:i] == string[:i][::-1]:
+            return strin...",0.2759,True,False,6847.3,92,
+HumanEval/11,localcodepilot,"from typing import List
+def string_xor(a: str, b: str) -> str:
+    """""" Input are two strings a and b...","            return '0'
+        else:
+            return '1'
+    return ''.join(xor(x, y) for x, y in...","            return '0'
+        else:
+            return '1'
+    
+    return ''.join(xor(a[i], b[i]) ...",0.6154,True,False,8308.2,106,
+HumanEval/12,localcodepilot,"from typing import List, Optional
+def longest(strings: List[str]) -> Optional[str]:
+    """""" Out of l...","    maxlen = max(len(x) for x in strings)
+    for s in strings:
+        if len(s) == maxlen:
+       ...","    max_length = 0
+    longest_string = None
+    for string in strings:
+        if len(string) > max...",0.3077,True,False,9612.9,135,
+HumanEval/13,localcodepilot,"def greatest_common_divisor(a: int, b: int) -> int:
+    """""" Return a greatest common divisor of two ...","        a, b = b, a % b
+    return a
+...","        a, b = b, a % b
+    return a...",1.0,True,True,6282.4,95,
+HumanEval/14,localcodepilot,"from typing import List
+def all_prefixes(string: str) -> List[str]:
+    """""" Return list of all prefi...","    for i in range(len(string)):
+        result.append(string[:i+1])
+    return result
+...","    for i in range(len(string)):
+        result.append(string[:i+1])
+    return result...",1.0,True,True,6152.2,94,
+HumanEval/15,localcodepilot,"def string_sequence(n: int) -> str:
+    """""" Return a string containing space-delimited numbers start...",...,...,1.0,True,True,5874.0,96,
+HumanEval/16,localcodepilot,"def count_distinct_characters(string: str) -> int:
+    """""" Given a string, find out how many distinc...",...,...,1.0,True,True,5555.5,107,
+HumanEval/17,localcodepilot,"from typing import List
+def parse_music(music_string: str) -> List[int]:
+    """""" Input to this funct...","    return [note_map[x] for x in music_string.split(' ') if x]
+...",    return [note_map[note] for note in music_string.split()]...,0.4,True,False,12241.8,167,
+HumanEval/18,localcodepilot,"def how_many_times(string: str, substring: str) -> int:
+    """""" Find how many times a given substrin...","    for i in range(len(string) - len(substring) + 1):
+        if string[i:i+len(substring)] == subst...","    while substring in string:
+        times += 1
+        string = string[string.index(substring) + ...",0.4516,True,False,8155.4,115,
+HumanEval/19,localcodepilot,"from typing import List
+def sort_numbers(numbers: str) -> str:
+    """""" Input is a space-delimited st...","    return ' '.join(sorted([x for x in numbers.split(' ') if x], key=lambda x: value_map[x]))
+...","    numbers_list = [value_map[num] for num in numbers.split()]
+    numbers_list.sort()
+    return ' ...",0.2857,True,False,11102.5,137,

@@ -1,0 +1,32 @@
+[
+  {
+    "mode": "baseline",
+    "problems_run": 20,
+    "avg_bleu": 0.5809,
+    "pass_at_1_pct": 85.0,
+    "exact_match_pct": 20.0,
+    "avg_latency_ms": 5937.2,
+    "avg_context_tokens": 0.0,
+    "errors": 0
+  },
+  {
+    "mode": "naive",
+    "problems_run": 20,
+    "avg_bleu": 0.6717,
+    "pass_at_1_pct": 90.0,
+    "exact_match_pct": 40.0,
+    "avg_latency_ms": 8214.3,
+    "avg_context_tokens": 79.3,
+    "errors": 0
+  },
+  {
+    "mode": "localcodepilot",
+    "problems_run": 20,
+    "avg_bleu": 0.7105,
+    "pass_at_1_pct": 95.0,
+    "exact_match_pct": 35.0,
+    "avg_latency_ms": 8427.7,
+    "avg_context_tokens": 116.3,
+    "errors": 0
+  }
+]

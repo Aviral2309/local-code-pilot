@@ -138,8 +138,9 @@ def build_fim_prompt(
     # Build the effective prefix: context block + current file prefix
     if injected_context.strip():
         context_block = (
-            f"# Context from workspace:\n"
-            f"{injected_context}\n\n"
+            f"# [WORKSPACE CONTEXT — relevant definitions from this project]\n"
+            f"{injected_context}\n"
+            f"# [END CONTEXT]\n\n"
         )
         effective_prefix = context_block + trimmed_prefix
     else:

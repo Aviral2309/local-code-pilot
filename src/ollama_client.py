@@ -153,8 +153,8 @@ class OllamaClient:
                 "temperature": self.config.temperature,
                 "top_p": self.config.top_p,
                 "repeat_penalty": self.config.repeat_penalty,
-                "num_predict": 30,
-                "stop": FIM_STOP_SEQUENCES + ["\n\n\n", "```", "# Context"],
+                "num_predict": 128,   # max tokens to generate
+                "stop": FIM_STOP_SEQUENCES,
             },
         }
 
