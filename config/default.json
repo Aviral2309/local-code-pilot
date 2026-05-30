@@ -8,7 +8,7 @@
   "ollama": {
     "base_url": "http://localhost:11434",
     "model": "qwen2.5-coder:0.5b",
-    "temperature": 0.0,
+    "temperature": 0.1,
     "top_p": 0.9,
     "repeat_penalty": 1.05,
     "stream": true,
@@ -16,9 +16,9 @@
   },
   "completion": {
     "debounce_ms": 200,
-    "max_prefix_lines": 20,
-    "max_suffix_lines": 10,
-    "max_completion_tokens": 60,
+    "max_prefix_lines": 50,
+    "max_suffix_lines": 20,
+    "max_completion_tokens": 128,
     "trigger_characters": [".", "(", " "]
   },
   "knapsack": {

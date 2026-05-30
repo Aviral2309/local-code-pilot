@@ -49,7 +49,6 @@ class FIMPayload:
         language_id:      VS Code language identifier (e.g. "python").
         token_estimate:   Rough token count of the full prompt.
     """
-
     prompt: str
     prefix: str
     suffix: str
@@ -138,8 +137,10 @@ def build_fim_prompt(
 
     # Build the effective prefix: context block + current file prefix
     if injected_context.strip():
-        context_block = f"# Context from workspace:\n" f"{injected_context}\n\n"
-
+        context_block = (
+            f"# Context from workspace:\n"
+            f"{injected_context}\n\n"
+        )
         effective_prefix = context_block + trimmed_prefix
     else:
         effective_prefix = trimmed_prefix
@@ -191,19 +192,10 @@ def extract_clean_completion(raw: str) -> str:
         Clean completion text.
     """
     result = raw
-
-    # Strip FIM stop tokens
     for stop_token in FIM_STOP_SEQUENCES:
         result = result.split(stop_token)[0]
 
-    # Strip markdown explanations (0.5B models tend to add these)
-    for marker in ["```", "This code", "This function", "The above", "# Context"]:
-        if marker in result:
-            result = result.split(marker)[0]
-
-    # Strip triple blank lines
-    while "\n\n\n" in result:
-        result = result.split("\n\n\n")[0]
-
+    # Strip trailing whitespace but preserve internal structure
     result = result.rstrip()
+
     return result

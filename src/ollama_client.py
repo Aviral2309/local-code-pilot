@@ -41,13 +41,11 @@ logger = logging.getLogger(__name__)
 
 class OllamaConnectionError(Exception):
     """Raised when Ollama is unreachable at startup or during a request."""
-
     pass
 
 
 class OllamaTimeoutError(Exception):
     """Raised when Ollama exceeds the configured timeout."""
-
     pass
 
 
@@ -156,7 +154,7 @@ class OllamaClient:
                 "top_p": self.config.top_p,
                 "repeat_penalty": self.config.repeat_penalty,
                 "num_predict": 30,
-                "stop": FIM_STOP_SEQUENCES + ["\n\n\n", "```", "# Context", "\n\n"],
+                "stop": FIM_STOP_SEQUENCES + ["\n\n\n", "```", "# Context"],
             },
         }
 

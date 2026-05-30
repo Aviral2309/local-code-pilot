@@ -40,9 +40,14 @@ from typing import Optional
 from lsprotocol import types
 from pygls.server import LanguageServer
 
+from src.ast_indexer import parse_workspace
+from src.call_graph import CallGraph
 from src.config import Config, load_config
 from src.debounce import AsyncDebouncer
+from src.dirty_watcher import DirtyWatcher
+from src.embedder import EmbeddingEngine
 from src.fim_builder import build_fim_prompt
+from src.knapsack_allocator import ContextAllocator
 from src.ollama_client import OllamaClient, OllamaConnectionError, OllamaTimeoutError
 from src.telemetry import CompletionEvent, TelemetryLogger
 
@@ -166,6 +171,24 @@ class AuraLSPServer:
         # max_workers=2: one for embeddings, one for misc blocking ops
         self._executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="aura")
 
+        # Phase 2: Semantic retrieval engine
+        self._embedder = EmbeddingEngine(
+            model_name=config.embedding.model_name
+        )
+        self._call_graph = CallGraph()
+        self._dirty_watcher = DirtyWatcher(self._embedder, self._call_graph)
+        self._allocator = ContextAllocator(
+            embedder=self._embedder,
+            call_graph=self._call_graph,
+            token_cap=config.knapsack.token_cap,
+            weight_semantic=config.knapsack.weight_semantic,
+            weight_graph=config.knapsack.weight_graph_distance,
+            weight_recency=config.knapsack.weight_recency,
+            top_k_candidates=config.knapsack.top_k_candidates,
+        )
+        self._workspace_root: Optional[str] = None
+        self._index_ready = False
+
         # Track the last completion for accept/reject telemetry
         self._last_completion_row_id: Optional[int] = None
         self._last_completion_text: Optional[str] = None
@@ -196,8 +219,22 @@ class AuraLSPServer:
                 f"| workspace: {params.root_uri}"
             )
 
-            # Run Ollama health check in background — don't block initialize
+            # Store workspace root for indexing
+            if params.root_uri:
+                self._workspace_root = (
+                    params.root_uri
+                    .replace("file:///", "")
+                    .replace("file://", "")
+                )
+                # Windows path fix
+                if (len(self._workspace_root) > 2
+                        and self._workspace_root[0] == "/"
+                        and self._workspace_root[2] == ":"):
+                    self._workspace_root = self._workspace_root[1:]
+
+            # Run startup tasks in background — don't block initialize
             asyncio.create_task(self._startup_health_check())
+            asyncio.create_task(self._startup_indexing())
 
         # ------------------------------------------------------------------
         # Lifecycle: initialized (server is ready)
@@ -242,11 +279,16 @@ class AuraLSPServer:
         @lsp.feature(types.TEXT_DOCUMENT_DID_SAVE)
         async def on_save(params: types.DidSaveTextDocumentParams) -> None:
             """
-            Triggered when user saves. Phase 2 will add dirty-bit
-            invalidation here. For Phase 1, just log.
+            Triggered when user saves. Notifies dirty watcher to
+            re-index only the changed functions in this file.
             """
-            logger.debug(f"Saved: {params.text_document.uri}")
-            # Phase 2: self.indexer.mark_dirty(params.text_document.uri)
+            uri = params.text_document.uri
+            file_path = uri.replace("file:///", "").replace("file://", "")
+            if len(file_path) > 2 and file_path[0] == "/" and file_path[2] == ":":
+                file_path = file_path[1:]
+
+            logger.debug(f"Saved: {Path(file_path).name}")
+            self._dirty_watcher.on_file_saved(file_path)
 
         # ------------------------------------------------------------------
         # Document sync: closed
@@ -300,9 +342,18 @@ class AuraLSPServer:
 
             t_request_start = time.perf_counter()
 
-            # Phase 1: no context injection (empty string)
-            # Phase 2: injected_context = await self.retriever.get_context(prefix)
+            # Phase 2: get workspace context via knapsack allocator
             injected_context = ""
+            chunk_ids_used = []
+            if self._index_ready:
+                loop = asyncio.get_event_loop()
+                injected_context, chunk_ids_used = await loop.run_in_executor(
+                    self._executor,
+                    self._allocator.get_context,
+                    prefix,
+                    uri,
+                    None,  # current_func detection coming in Phase 3
+                )
 
             payload = build_fim_prompt(
                 prefix=prefix,
@@ -355,7 +406,7 @@ class AuraLSPServer:
             event = CompletionEvent(
                 file_path=uri,
                 language_id=lang_id,
-                context_used=[],  # Phase 2: will contain chunk IDs
+                context_used=chunk_ids_used,
                 ttft_ms=ttft_ms,
                 total_ms=total_ms,
                 completion_text=completion_text,
@@ -400,24 +451,84 @@ class AuraLSPServer:
         @lsp.feature(types.SHUTDOWN)
         async def on_shutdown(params: None) -> None:
             logger.info("Shutdown requested. Cleaning up.")
+            await self._dirty_watcher.stop()
             await self.ollama.close()
             self._executor.shutdown(wait=False)
 
     async def _startup_health_check(self) -> None:
-        """
-        Background task: verify Ollama is running after initialization.
-        Shows a warning notification in the editor if Ollama is down.
-        """
+        """Background task: verify Ollama is running after initialization."""
         try:
             await self.ollama.health_check()
         except OllamaConnectionError as e:
             logger.error(f"Ollama not available: {e}")
-            # Send a warning to the editor's notification area
             self.lsp.show_message(
                 f"⚠ AuraLSP: Ollama not found. Run `ollama serve` then "
                 f"`ollama pull {self.config.ollama.model}`",
                 types.MessageType.Warning,
             )
+
+    async def _startup_indexing(self) -> None:
+        """
+        Background task: load embedding model and index workspace.
+
+        Runs after initialize — does NOT block the editor from opening.
+        Completions work without context until indexing completes,
+        then automatically switch to context-aware mode.
+        """
+        if not self._workspace_root:
+            logger.info("No workspace root — skipping indexing")
+            return
+
+        loop = asyncio.get_event_loop()
+
+        # Step 1: Load embedding model (blocking — run in executor)
+        logger.info("Loading embedding model...")
+        await loop.run_in_executor(self._executor, self._embedder.load_model)
+
+        if not self._embedder._model:
+            logger.warning("Embedding model failed to load — context injection disabled")
+            return
+
+        # Step 2: Parse workspace
+        logger.info(f"Indexing workspace: {self._workspace_root}")
+        all_chunks = await loop.run_in_executor(
+            self._executor,
+            parse_workspace,
+            self._workspace_root,
+        )
+
+        if not all_chunks:
+            logger.info("No Python files found in workspace")
+            return
+
+        # Step 3: Build embeddings
+        await loop.run_in_executor(
+            self._executor,
+            self._embedder.index_chunks,
+            all_chunks,
+        )
+
+        # Step 4: Build call graph
+        await loop.run_in_executor(
+            self._executor,
+            self._call_graph.build_from_chunks,
+            all_chunks,
+        )
+
+        # Step 5: Initialize dirty watcher
+        self._dirty_watcher.initialize_from_chunks(all_chunks)
+        await self._dirty_watcher.start()
+
+        self._index_ready = True
+        logger.info(
+            f"Indexing complete: {self._embedder.index_size} chunks | "
+            f"{self._call_graph.node_count} graph nodes | "
+            f"Context injection ACTIVE"
+        )
+        self.lsp.show_message(
+            f"AuraLSP: indexed {self._embedder.index_size} functions — context injection active",
+            types.MessageType.Info,
+        )
 
     def get_server_capabilities(self) -> types.ServerCapabilities:
         """
